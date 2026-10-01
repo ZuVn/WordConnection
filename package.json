@@ -1,0 +1,17 @@
+{
+  "name": "wordchain-selfbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Selfbot tự chơi nối từ với trọng tài GlitchBucket",
+  "main": "wordchain.js",
+  "scripts": {
+    "start": "node wordchain.js"
+  },
+  "engines": {
+    "node": ">=20.18"
+  },
+  "license": "GPL-3.0",
+  "dependencies": {
+    "discord.js-selfbot-v13": "3.7.1"
+  }
+}
