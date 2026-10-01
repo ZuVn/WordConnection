@@ -495,7 +495,6 @@ an giấc
 án gian
 ăn gian
 ẩn giấu
-an gin
 ăn giỗ
 ăn giơ
 ăng kết
@@ -1698,7 +1697,6 @@ bằng gì
 bang gia
 băng giá
 bang giao
-băng giô
 bằng gỗ
 băng hà
 băng hai
@@ -1807,7 +1805,6 @@ bà nguyệt
 bằng vai
 bảng vàng
 băng video
-băng vidéo
 băng xăng
 băng xích
 bằng yên
@@ -3711,7 +3708,6 @@ bịp bơm
 bịp bợm
 bịp già
 bí phấn
-bì phạp
 bị phạt
 bị phí
 bì phu
@@ -14475,7 +14471,6 @@ dĩa bay
 địa đạo
 địa đầu
 đĩa đèn
-địa diểm
 địa điểm
 địa điện
 địa đồ
@@ -20653,7 +20648,6 @@ hết trơn
 hết trụi
 hệ từ
 hết veo
-hết viá
 hết vía
 hết xẩy
 hết ý
@@ -25366,7 +25360,6 @@ lái chiếc
 lại chơi
 lai dai
 lái đò
-lại dùng
 lại gan
 lại gạo
 lai giống
@@ -25388,7 +25381,6 @@ lại nhà
 lai nhai
 lài nhài
 lải nhải
-lại nhữ
 lại nữa
 lại quả
 lai rai
@@ -30281,7 +30273,6 @@ nắc nẻ
 nấc nở
 nặc nô
 nắc nỏm
-nặc sách
 nấc thang
 nã đạn
 nạ dòng
@@ -35127,10 +35118,8 @@ oong đơ
 ở vú
 ô vuông
 ô xi
-ô xít
 oxy già
 oxy hoá
-ô zôn
 pa lăng
 pa lét
 pa nen
@@ -42161,7 +42150,6 @@ thần quyền
 thân răng
 thân rễ
 thần sa
-thần sạ
 thần sắc
 than sàng
 thân sĩ
@@ -42214,7 +42202,6 @@ thân vương
 thân xác
 thần xác
 than xanh
-than xỉ
 than xương
 thân xương
 thân yêu
@@ -52155,3 +52142,10 @@ y viện
 y vụ
 y xá
 ngợm nghĩnh
+đọng lại
+ngãi tế
+ninh xương
+video cassette
+quẫy đạp
+bố thắng
+thoại giang
