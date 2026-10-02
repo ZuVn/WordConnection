@@ -18,7 +18,7 @@ const config = {
   opponentId: process.env.OPPONENT_ID || null,
   refereeId: process.env.REFEREE_ID || null,
   refereeName: /glitch\s*bucket/i,
-  dictPath: process.env.DICT_PATH || path.join(__dirname, 'Viet_2chu.txt'),
+  dictPath: process.env.DICT_PATH || path.join(__dirname, 'Word_to_connect.txt'),
   // Từ bị trọng tài ❓ (không có trong từ điển), đã xoá khỏi từ điển
   rejectedPath: path.join(__dirname, 'x_word.txt'),
   // Thời gian "suy nghĩ" giả lập người gõ (ms)
@@ -169,7 +169,7 @@ function learnWord(word) {
   appendLine(config.dictPath, word);
 
   if (rejected.delete(word)) removeLine(config.rejectedPath, word);
-  log(`   + ${word} → Viet_2chu.txt`);
+  log(`   + ${word} → Word_to_connect.txt`);
 }
 
 // Xoá từ khỏi từ điển (cả file) và ghi vào x_word.txt

@@ -29,8 +29,8 @@ npm start
 | Tín hiệu từ GlitchBucket | Bot làm gì |
 |---|---|
 | "Lượt nối từ mới đã bắt đầu với từ X" | Bắt đầu ván mới, nối tiếp từ X |
-| ✅ hoặc ❕ trên từ của đối thủ | Đến lượt, nối tiếp. Từ chưa có trong db thì thêm vào `Viet_2chu.txt` |
-| ❓ trên từ của bot | Xoá từ khỏi `Viet_2chu.txt`, ghi vào `x_word.txt`, gửi từ khác |
+| ✅ hoặc ❕ trên từ của đối thủ | Đến lượt, nối tiếp. Từ chưa có trong db thì thêm vào `Word_to_connect.txt` |
+| ❓ trên từ của bot | Xoá từ khỏi `Word_to_connect.txt`, ghi vào `x_word.txt`, gửi từ khác |
 | ❌ trên từ của bot | Giữ từ trong db, gửi từ khác |
 | "Bạn đã sử dụng một từ không có trong từ điển (X)" | X có trong db thì xoá và ghi vào `x_word.txt` |
 
