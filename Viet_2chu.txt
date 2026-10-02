@@ -29064,7 +29064,6 @@ mía lau
 mía lùi
 mỉa mai
 mía tơ
-mi ca
 mĩ cảm
 mì chính
 mích lòng
@@ -36029,7 +36028,6 @@ phòng về
 phòng vệ
 phong vị
 phóng viên
-phòng viêng
 phong vũ
 phóng xạ
 phòng xa
@@ -51801,3 +51799,7 @@ video cassette
 quẫy đạp
 bố thắng
 thoại giang
+rợ thát
+mẹt bún
+nhện đen
+lụy tình
