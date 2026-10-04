@@ -3827,6 +3827,7 @@ bốc hỏa
 bốc hơi
 bộ chọn
 bố chồng
+bố thắng
 bỏ chồng
 bốc hốt
 bộ chữ
@@ -15968,6 +15969,8 @@ dòng biển
 đồng bọn
 đồng bóng
 đong buông
+đọng nước
+đọng lại
 đồng ca
 đồng cái
 đồng cam
@@ -27923,8 +27926,8 @@ luýnh quýnh
 luỹ thừa
 lũy thừa
 luỹ tích
-luỹ tiến
 lũy tiến
+lụy tình
 ly bia
 ly biệt
 ly bôi
@@ -28950,6 +28953,7 @@ mềm môi
 mềm mỏng
 mềm nhẽo
 mềm nhũn
+mẹt bún
 mẹ mốc
 mê mộng
 mềm rục
@@ -31647,6 +31651,7 @@ ngôn từ
 ngổ núi
 ngón út
 ngon xơi
+ngợm nghĩnh
 ngợp mắt
 ngợp trời
 ngó ra
@@ -32877,6 +32882,7 @@ nhẹ nhỏm
 nhẻ nhót
 nhen lửa
 nhện nâu
+nhện đen
 nhện nhà
 nhèn nhẹt
 nhen nhóm
@@ -33523,6 +33529,7 @@ ninh gia
 nịnh hót
 nịnh mặt
 ninh ních
+ninh xương
 nình nịch
 nịnh nót
 nịnh nọt
@@ -37051,6 +37058,7 @@ quay trở
 quay trượt
 quây tụ
 quay vòng
+quẫy đạp
 quế bì
 quế biên
 quế chi
@@ -51791,15 +51799,7 @@ y trang
 y viện
 y vụ
 y xá
-ngợm nghĩnh
-đọng lại
 ngãi tế
-ninh xương
 video cassette
-quẫy đạp
-bố thắng
 thoại giang
 rợ thát
-mẹt bún
-nhện đen
-lụy tình
