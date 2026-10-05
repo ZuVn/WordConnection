@@ -18,6 +18,14 @@ ID lấy bằng cách bật Developer Mode trong Discord, chuột phải vào ch
 
 Lấy token: mở Discord trên trình duyệt, nhấn F12, vào tab Network, bấm sang một channel, chọn một request tới `api` rồi copy giá trị header `authorization`. Không chia sẻ token cho ai. Lỡ để lộ thì đổi mật khẩu Discord để vô hiệu token cũ.
 
+Tạo `client.curl` để bot giả lập đúng trình duyệt bạn đang dùng (nên làm, không bắt buộc). Dùng Chrome hoặc Chromium, cùng tab và cùng tài khoản với lúc lấy token:
+
+1. F12, tab Network, gõ `api/v9` vào ô lọc, bấm sang một channel.
+2. Chuột phải vào request `messages?limit=...` (số nào cũng được), chọn Copy, rồi Copy as cURL (bash).
+3. Dán vào file `client.curl` trong thư mục này.
+
+File chứa token nên đã nằm trong `.gitignore`. Mỗi lần Chrome hoặc Discord cập nhật lớn, làm lại các bước trên. Không có file này thì bot dùng thông tin Discord Desktop mặc định của thư viện.
+
 ## Cách chạy
 
 ```bash
