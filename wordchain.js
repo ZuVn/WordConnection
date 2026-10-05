@@ -29,8 +29,6 @@ const config = {
   dictPath: process.env.DICT_PATH || path.join(__dirname, 'Word_to_connect.txt'),
   // Request thật copy từ Chrome (Copy as cURL), dùng để giả lập đúng client đó
   identityPath: path.join(__dirname, 'client.curl'),
-  // Từ bị trọng tài ❓ (không có trong từ điển), đã xoá khỏi từ điển
-  rejectedPath: path.join(__dirname, 'x_word.txt'),
   // Thời gian "suy nghĩ" giả lập người gõ (ms)
   minDelay: Number(process.env.MIN_DELAY ?? (chill ? 10000 : 2500)),
   maxDelay: Number(process.env.MAX_DELAY ?? (chill ? 20000 : 6000)),
@@ -46,7 +44,6 @@ if (!config.token) {
 }
 
 const START_PHRASE = 'lượt nối từ mới đã bắt đầu với từ';
-const NOT_IN_DICT_PHRASE = 'bạn đã sử dụng một từ không có trong từ điển';
 // ✅ từ hợp lệ, ❕ từ hợp lệ và hiểm hóc
 const OK_EMOJIS = new Set(['✅', '❕']);
 const BAD_EMOJI = '❌';
@@ -79,19 +76,13 @@ const lastSyl = w => w.slice(w.indexOf(' ') + 1);
 
 /* ---------------- Từ điển ---------------- */
 
-const rejected = new Set(
-  fs.existsSync(config.rejectedPath)
-    ? fs.readFileSync(config.rejectedPath, 'utf8').split('\n').map(normalize).filter(Boolean)
-    : [],
-);
-
 const words = [
   ...new Set(
     fs
       .readFileSync(config.dictPath, 'utf8')
       .split('\n')
       .map(normalize)
-      .filter(w => asWord(w) && !rejected.has(w)),
+      .filter(w => asWord(w)),
   ),
 ];
 const dictionary = new Set(words);
@@ -151,20 +142,6 @@ function unmarkUsed(word) {
   }
 }
 
-// Ghi đè file qua file tạm để không bị hỏng nếu bot tắt giữa chừng
-function writeFileSafe(file, content) {
-  const tmp = `${file}.tmp`;
-  fs.writeFileSync(tmp, content);
-  fs.renameSync(tmp, file);
-}
-
-// Xoá một dòng khỏi file danh sách từ
-function removeLine(file, word) {
-  if (!fs.existsSync(file)) return;
-  const lines = fs.readFileSync(file, 'utf8').split('\n');
-  writeFileSafe(file, lines.filter(line => normalize(line) !== word).join('\n'));
-}
-
 // Thêm một dòng vào cuối file (bỏ qua nếu đã có), tự chèn xuống dòng nếu file chưa kết thúc bằng \n
 function appendLine(file, word) {
   const content = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
@@ -173,7 +150,7 @@ function appendLine(file, word) {
   fs.appendFileSync(file, `${sep}${word}\n`);
 }
 
-// Từ của đối thủ được ✅ mà chưa có trong từ điển: thêm vào (và gỡ khỏi x_word.txt nếu có)
+// Từ của đối thủ được ✅ mà chưa có trong từ điển: thêm vào
 function learnWord(word) {
   if (dictionary.has(word)) return;
   dictionary.add(word);
@@ -182,25 +159,7 @@ function learnWord(word) {
   byFirst.get(s).push(word);
   if (!game.used.has(word)) game.degree.set(s, (game.degree.get(s) ?? 0) + 1);
   appendLine(config.dictPath, word);
-
-  if (rejected.delete(word)) removeLine(config.rejectedPath, word);
   log(`   + ${word} → Word_to_connect.txt`);
-}
-
-// Xoá từ khỏi từ điển (cả file) và ghi vào x_word.txt
-function rejectWord(word) {
-  if (rejected.has(word)) return;
-  rejected.add(word);
-  appendLine(config.rejectedPath, word);
-  log(`   ❓ ${word} → x_word.txt`);
-
-  if (dictionary.delete(word)) {
-    const s = firstSyl(word);
-    const list = byFirst.get(s);
-    list.splice(list.indexOf(word), 1);
-    if (!game.used.has(word)) game.degree.set(s, game.degree.get(s) - 1);
-    removeLine(config.dictPath, word);
-  }
 }
 
 const deg = s => game.degree.get(s) ?? 0;
@@ -394,15 +353,6 @@ function parseStartWord(message) {
   return match ? match[1] : null;
 }
 
-// Lấy từ trong ngoặc phía sau "Bạn đã sử dụng một từ không có trong từ điển (...)"
-function parseNotInDictWord(message) {
-  const text = normalize(messageText(message));
-  const idx = text.indexOf(NOT_IN_DICT_PHRASE);
-  if (idx === -1) return null;
-  const match = text.slice(idx + NOT_IN_DICT_PHRASE.length).match(/\(([^)]*)\)/);
-  return match ? asWord(match[1]) : null;
-}
-
 // Tin nhắn lấy từ lịch sử có reaction này không (trong channel chỉ có trọng tài react)
 const hasReaction = (message, ...emojis) =>
   message.reactions.cache.some(r => emojis.includes(r.emoji.name?.replace('\uFE0F', '')));
@@ -484,9 +434,8 @@ function rejectOurWord(emoji) {
   game.pending = null;
 
   if (emoji === UNKNOWN_EMOJI) {
-    // Không có trong từ điển trọng tài: xoá khỏi db, ghi vào x_word.txt
-    unmarkUsed(word);
-    rejectWord(word);
+    // Không có trong từ điển trọng tài: không gửi lại trong ván này
+    log(`   ❓ ${word}`);
   } else if (game.lastWord !== prevWord) {
     // Đối thủ đã nối trước (gửi cùng lúc): bị ❌ vì lệch lượt, từ vẫn chưa dùng
     unmarkUsed(word);
@@ -560,7 +509,7 @@ client.on('ready', async () => {
     console.error(`Không truy cập được channel ${config.channelId}`);
     process.exit(1);
   }
-  log(`${client.user.tag} @ #${channel.name} — ${dictionary.size} từ, ${rejected.size} từ bị loại${config.chill ? ' (chill)' : ''}`);
+  log(`${client.user.tag} @ #${channel.name} — ${dictionary.size} từ${config.chill ? ' (chill)' : ''}`);
 
   resetGame();
   await syncHistory(channel);
@@ -570,9 +519,6 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async message => {
   if (message.channelId !== config.channelId || !isReferee(message.author)) return;
-
-  const invalid = parseNotInDictWord(message);
-  if (invalid && dictionary.has(invalid)) rejectWord(invalid);
 
   const start = parseStartWord(message);
   if (!start) return;

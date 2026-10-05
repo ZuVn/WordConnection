@@ -44,9 +44,8 @@ npm run chill
 |---|---|
 | "Lượt nối từ mới đã bắt đầu với từ X" | Bắt đầu ván mới, nối tiếp từ X |
 | ✅ hoặc ❕ trên từ của đối thủ | Đến lượt, nối tiếp. Từ chưa có trong db thì thêm vào `Word_to_connect.txt` |
-| ❓ trên từ của bot | Xoá từ khỏi `Word_to_connect.txt`, ghi vào `x_word.txt`, gửi từ khác |
+| ❓ trên từ của bot | Không dùng lại từ đó trong ván này, gửi từ khác |
 | ❌ trên từ của bot | Giữ từ trong db, gửi từ khác |
-| "Bạn đã sử dụng một từ không có trong từ điển (X)" | X có trong db thì xoá và ghi vào `x_word.txt` |
 
 Mỗi lượt bot đổi từ tối đa 3 lần. Khi khởi động, bot đọc 100 tin nhắn gần nhất để tiếp tục ván đang dở.
 
