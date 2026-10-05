@@ -12,6 +12,8 @@
   },
   "license": "GPL-3.0",
   "dependencies": {
-    "discord.js-selfbot-v13": "3.7.1"
+    "discord.js-selfbot-v13": "3.7.1",
+    "impit": "^0.14.5",
+    "zlib-sync": "^0.1.10"
   }
 }
