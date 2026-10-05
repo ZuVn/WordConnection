@@ -4,7 +4,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const { randomUUID } = require('crypto');
+const { Impit } = require('impit');
 const { Client } = require('discord.js-selfbot-v13');
+const wsModule = require('discord.js-selfbot-v13/src/WebSocket');
+const { ciphers } = require('discord.js-selfbot-v13/src/util/Constants');
 
 try {
   process.loadEnvFile(path.join(__dirname, '.env'));
@@ -19,6 +23,8 @@ const config = {
   refereeId: process.env.REFEREE_ID || null,
   refereeName: /glitch\s*bucket/i,
   dictPath: process.env.DICT_PATH || path.join(__dirname, 'Word_to_connect.txt'),
+  // Request thật copy từ Chrome (Copy as cURL), dùng để giả lập đúng client đó
+  identityPath: path.join(__dirname, 'client.curl'),
   // Từ bị trọng tài ❓ (không có trong từ điển), đã xoá khỏi từ điển
   rejectedPath: path.join(__dirname, 'x_word.txt'),
   // Thời gian "suy nghĩ" giả lập người gõ (ms)
@@ -262,7 +268,85 @@ function chooseMove(prevWord, exclude = []) {
 
 /* ---------------- Discord ---------------- */
 
-const client = new Client();
+// Bị Discord đòi captcha là dấu hiệu tài khoản đang bị nghi: dừng hẳn, không cố giải
+function exitOnCaptcha() {
+  console.error('Discord yêu cầu captcha, dừng bot.');
+  process.exit(1);
+}
+
+const client = new Client({ captchaSolver: exitOnCaptcha });
+
+/* ---------------- Giả lập client thật ---------------- */
+
+// Header định danh client lấy từ client.curl, phần còn lại thư viện tự thêm
+const IDENTITY_HEADERS = [
+  'accept-language',
+  'sec-ch-ua',
+  'sec-ch-ua-mobile',
+  'sec-ch-ua-platform',
+  'user-agent',
+  'x-debug-options',
+  'x-discord-locale',
+  'x-discord-timezone',
+  'x-super-properties',
+];
+
+function loadIdentity(file) {
+  if (!fs.existsSync(file)) {
+    log(`(không có ${path.basename(file)}, dùng thông tin client mặc định của thư viện)`);
+    return;
+  }
+  const headers = {};
+  for (const [, key, value] of fs.readFileSync(file, 'utf8').matchAll(/-H '([^:]+): ([^']*)'/g)) {
+    if (IDENTITY_HEADERS.includes(key.toLowerCase())) headers[key.toLowerCase()] = value;
+  }
+  const { 'user-agent': userAgent, 'x-super-properties': superProps, ...rest } = headers;
+  if (!/Chrome\/\d+/.test(userAgent ?? '') || !superProps) {
+    console.error(`${path.basename(file)} phải là request tới /api của Discord, copy từ Chrome/Chromium`);
+    process.exit(1);
+  }
+
+  const properties = JSON.parse(Buffer.from(superProps, 'base64').toString('utf8'));
+  // ID theo phiên chạy: client thật tạo mới mỗi lần mở
+  for (const key of ['client_launch_id', 'launch_signature', 'client_heartbeat_session_id']) {
+    if (key in properties) properties[key] = randomUUID();
+  }
+  // Thay hẳn (không trộn) để không sót trường của Discord Desktop mặc định
+  client.options.ws.properties = properties;
+  Object.assign(client.options.http.headers, rest, { 'User-Agent': userAgent });
+}
+
+loadIdentity(config.identityPath);
+
+// REST qua impit: TLS và HTTP/2 giống Chrome thật thay vì Node
+const userAgent = client.options.http.headers['User-Agent'];
+const chromeMajor = Number(userAgent.match(/Chrome\/(\d+)/)?.[1]);
+// ponytail: danh sách profile chép tay từ type Browser của impit, cập nhật impit thì thêm bản mới vào đây
+const profile = [151, 142, 136, 131, 125, 124, 116, 110, 107, 104, 101, 100].find(v => v <= chromeMajor);
+const impit = new Impit({ browser: profile ? `chrome${profile}` : 'chrome', cookieJar: client.rest.cookieJar });
+// impit tự thêm header của lần mở trang, request API của Discord không có
+client.rest.fetch = (url, init) =>
+  impit.fetch(url, { ...init, headers: { ...init.headers, 'upgrade-insecure-requests': '', 'sec-fetch-user': '' } });
+
+// Gateway: handshake có header như trình duyệt, TLS dùng cipher Chrome
+// ponytail: phần extension TLS vẫn là của Node, không giả lập được bằng thư viện ws
+const createWs = wsModule.create;
+wsModule.create = (gateway, query, options) =>
+  createWs(gateway, query, {
+    ...options,
+    ciphers: ciphers.join(':'),
+    ALPNProtocols: ['http/1.1'],
+    headers: {
+      Origin: 'https://discord.com',
+      'User-Agent': userAgent,
+      'Accept-Language': client.options.http.headers['accept-language'] ?? 'en-US',
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+    },
+  });
+
+// Đánh dấu đã đọc tin nhắn mới nhất trong channel, như client thật khi đang mở channel
+const markRead = channel => channel.messages.cache.get(channel.lastMessageId)?.markRead().catch(() => null);
 
 function isReferee(user) {
   if (!user) return false;
@@ -326,6 +410,7 @@ async function play() {
       return;
     }
 
+    await markRead(channel);
     await channel.sendTyping().catch(() => null);
     await sleep(600 + word.length * 90);
     if (game.lastWord !== prevWord || !game.ourTurn) return;
@@ -337,6 +422,7 @@ async function play() {
     const ends = available(lastSyl(word)).length === 0;
     log(`   Mình:    ${word}${ends ? '  ← từ chặn' : ''}`);
   } catch (err) {
+    if (err?.captcha) exitOnCaptcha();
     console.error('Lỗi khi gửi từ:', err);
   } finally {
     game.busy = false;
@@ -452,6 +538,7 @@ client.on('ready', async () => {
 
   resetGame();
   await syncHistory(channel);
+  await markRead(channel);
   await play();
 });
 
@@ -500,6 +587,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
   }
 });
 
-process.on('unhandledRejection', err => console.error('unhandledRejection:', err));
+process.on('unhandledRejection', err => {
+  if (err?.captcha) exitOnCaptcha();
+  console.error('unhandledRejection:', err);
+});
 
 client.login(config.token);
