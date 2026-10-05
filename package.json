@@ -5,7 +5,8 @@
   "description": "Selfbot tự chơi nối từ với trọng tài GlitchBucket",
   "main": "wordchain.js",
   "scripts": {
-    "start": "node wordchain.js"
+    "start": "node wordchain.js",
+    "chill": "node wordchain.js --chill"
   },
   "engines": {
     "node": ">=20.18"

@@ -16,7 +16,11 @@ try {
   // Không có .env thì dùng biến môi trường sẵn có
 }
 
+// node wordchain.js --chill: chơi cho vui, không cố thắng
+const chill = process.argv.includes('--chill');
+
 const config = {
+  chill,
   token: process.env.TOKEN,
   channelId: process.env.CHANNEL_ID || '1507509194482389143',
   opponentId: process.env.OPPONENT_ID || null,
@@ -28,8 +32,10 @@ const config = {
   // Từ bị trọng tài ❓ (không có trong từ điển), đã xoá khỏi từ điển
   rejectedPath: path.join(__dirname, 'x_word.txt'),
   // Thời gian "suy nghĩ" giả lập người gõ (ms)
-  minDelay: Number(process.env.MIN_DELAY ?? 2500),
-  maxDelay: Number(process.env.MAX_DELAY ?? 6000),
+  minDelay: Number(process.env.MIN_DELAY ?? (chill ? 10000 : 2500)),
+  maxDelay: Number(process.env.MAX_DELAY ?? (chill ? 20000 : 6000)),
+  // Chill: người khác nối đúng chừng này từ liền thì trả lời luôn, không chờ hết delay
+  chillAnswers: 3,
   // Số lần đổi từ tối đa trong một lượt khi bị ❓/❌ (mỗi lần sai bị trừ điểm)
   maxRetries: 3,
 };
@@ -113,6 +119,8 @@ const game = {
   // Từ mình vừa gửi, đang chờ trọng tài chấm: { msgId, word, prevWord }
   pending: null,
   retries: 0,
+  // Số từ đúng của người khác kể từ từ gần nhất của mình
+  answers: 0,
   busy: false,
 };
 
@@ -123,6 +131,7 @@ function resetGame() {
   game.ourTurn = false;
   game.pending = null;
   game.retries = 0;
+  game.answers = 0;
 }
 
 function markUsed(word) {
@@ -221,6 +230,7 @@ function remaining(syl, exclude) {
 function chooseMove(prevWord, exclude = []) {
   const candidates = available(lastSyl(prevWord), exclude);
   if (!candidates.length) return null;
+  if (config.chill) return chooseChill(candidates);
 
   let best = [];
   let bestScore = -Infinity;
@@ -264,6 +274,13 @@ function chooseMove(prevWord, exclude = []) {
   }
 
   return best[Math.floor(Math.random() * best.length)];
+}
+
+// Chế độ chill: chọn ngẫu nhiên, tránh từ chặn, ưu tiên từ để đối thủ còn nhiều đường nối
+function chooseChill(candidates) {
+  const replies = w => available(lastSyl(w), [w]).length;
+  const pool = [5, 1, 0].map(n => candidates.filter(w => replies(w) >= n)).find(p => p.length);
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /* ---------------- Discord ---------------- */
@@ -399,7 +416,14 @@ async function play() {
   const prevWord = game.lastWord;
 
   try {
-    await sleep(game.retries ? 1500 + Math.random() * 1500 : randomDelay());
+    if (game.retries) {
+      await sleep(1500 + Math.random() * 1500);
+    } else {
+      // Chờ delay tính từ từ cuối; có từ mới thì dừng để đếm lại. Chill: đủ chillAnswers từ thì trả lời luôn
+      const until = Date.now() + randomDelay();
+      const enough = () => config.chill && game.answers >= config.chillAnswers;
+      while (Date.now() < until && game.lastWord === prevWord && !enough()) await sleep(250);
+    }
     // Trong lúc chờ có thể đối thủ đã nối trước hoặc ván đã reset
     if (game.lastWord !== prevWord || !game.ourTurn) return;
 
@@ -418,6 +442,7 @@ async function play() {
     const sent = await channel.send(word);
     markUsed(word);
     game.ourTurn = false;
+    game.answers = 0;
     game.pending = { msgId: sent.id, word, prevWord };
     const ends = available(lastSyl(word)).length === 0;
     log(`   Mình:    ${word}${ends ? '  ← từ chặn' : ''}`);
@@ -449,6 +474,7 @@ function acceptOpponentWord(word, message) {
   game.ourTurn = true;
   game.pending = null;
   game.retries = 0;
+  game.answers++;
   return true;
 }
 
@@ -534,7 +560,7 @@ client.on('ready', async () => {
     console.error(`Không truy cập được channel ${config.channelId}`);
     process.exit(1);
   }
-  log(`${client.user.tag} @ #${channel.name} — ${dictionary.size} từ, ${rejected.size} từ bị loại`);
+  log(`${client.user.tag} @ #${channel.name} — ${dictionary.size} từ, ${rejected.size} từ bị loại${config.chill ? ' (chill)' : ''}`);
 
   resetGame();
   await syncHistory(channel);

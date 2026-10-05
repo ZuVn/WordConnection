@@ -32,6 +32,12 @@ File chứa token nên đã nằm trong `.gitignore`. Mỗi lần Chrome hoặc 
 npm start
 ```
 
+Chơi chill (không cố thắng, nghĩ chậm hơn):
+
+```bash
+npm run chill
+```
+
 ## Cách bot phản ứng
 
 | Tín hiệu từ GlitchBucket | Bot làm gì |
@@ -45,3 +51,5 @@ npm start
 Mỗi lượt bot đổi từ tối đa 3 lần. Khi khởi động, bot đọc 100 tin nhắn gần nhất để tiếp tục ván đang dở.
 
 Cách chọn từ: ưu tiên từ chặn (sau nó không còn từ nào nối được) để kết thúc ván. Không có thì tính trước 2 lượt, tránh từ để lại từ chặn cho đối thủ và chọn từ khiến đối thủ có ít lựa chọn nhất.
+
+Chế độ chill: chọn ngẫu nhiên, không dùng từ chặn, ưu tiên từ để đối thủ còn ít nhất 5 cách nối. Sau mỗi từ của đối thủ, bot chờ 10–20 giây mới trả lời (có từ mới thì đếm lại từ đầu). Nếu người khác đã nối đúng 3 từ liền kể từ từ gần nhất của bot thì bot trả lời luôn.
