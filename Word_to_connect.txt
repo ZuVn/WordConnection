@@ -14282,7 +14282,6 @@ dẹp yên
 đẻ rơi
 dẽ run
 dê rừng
-đề sạc
 để sau
 dè sẻn
 dễ sợ
@@ -31916,7 +31915,6 @@ người mua
 người nào
 nguội ngắt
 người ngay
-người ngheo
 nguôi ngoai
 người ngoài
 người ngợm
@@ -48719,7 +48717,6 @@ u ơ
 ước muốn
 ước nguyền
 ước nguyện
-ước rằng
 ước số
 ước thệ
 ước thúc
@@ -51804,3 +51801,6 @@ video cassette
 thoại giang
 rợ thát
 liễm dung
+luỵ tình
+nguyện ý
+khuẩn cầu
