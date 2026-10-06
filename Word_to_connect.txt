@@ -1779,6 +1779,7 @@ bảng vàng
 băng xăng
 băng xích
 bằng yên
+banh xác
 bán hạ
 bắn hạ
 bà nhạc
@@ -14301,6 +14302,7 @@ dệt gấm
 đệ thất
 dễ thở
 đề thư
+đề thi
 dễ thương
 dễ thường
 đê tiện
@@ -24202,6 +24204,7 @@ khó xử
 khua gậy
 khua khoắng
 khuẩn cẩu
+khuẩn cầu
 khuẩn loại
 khuân vác
 khử áp
@@ -26430,6 +26433,7 @@ li e
 liếc mắt
 liếc nhìn
 liếc xéo
+liễm dung
 liêm chính
 liếm đít
 liếm gót
@@ -27927,6 +27931,7 @@ lũy thừa
 luỹ tích
 lũy tiến
 lụy tình
+luỵ tình
 ly bia
 ly biệt
 ly bôi
@@ -30581,7 +30586,9 @@ ngải cứu
 ngải đắng
 ngại khó
 ngại lời
+ngãi tế
 ngai ngái
+ngai vàng
 ngài ngại
 ngại ngần
 ngái ngủ
@@ -32106,6 +32113,7 @@ nguyên vẹn
 nguyên vì
 nguyên vị
 nguyện vọng
+nguyện ý
 nguyên xi
 nguyệt bạch
 nguyệt bổng
@@ -36734,6 +36742,7 @@ quả nhân
 quân hành
 quản hạt
 quận hạt
+quách phẩm
 quanh co
 quan hệ
 quần hệ
@@ -38150,6 +38159,7 @@ ro ro
 ro ró
 rờ rỡ
 rờ rợ
+rợ thát
 rốt bảng
 rốt cục
 rốt cùng
@@ -42923,7 +42933,9 @@ thoái chí
 thoái hoá
 thoái hóa
 thoái hôn
+thoại đàm
 thoại kịch
+thoại giang
 thoái lui
 thoải mái
 thoái ngũ
@@ -49854,6 +49866,7 @@ vị vong
 vi vu
 vi vút
 vi xi
+video cassette
 vô bào
 vỏ bào
 vợ bé
@@ -51796,14 +51809,3 @@ y trang
 y viện
 y vụ
 y xá
-ngãi tế
-video cassette
-thoại giang
-rợ thát
-liễm dung
-luỵ tình
-nguyện ý
-khuẩn cầu
-quách phẩm
-đề thi
-banh xác
